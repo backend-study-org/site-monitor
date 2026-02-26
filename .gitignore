@@ -1,5 +1,8 @@
 # Binaries
-monitor
+/monitor
+
+# MacOS
+.DS_Store
 
 # IDE
 .idea/
