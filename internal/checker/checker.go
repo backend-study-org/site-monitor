@@ -12,22 +12,20 @@ type Result struct {
 	Error  error
 }
 
+var client = &http.Client{Timeout: 10 * time.Second}
+
 func CheckSite(url string) Result {
-	client := http.Client{Timeout: 15 * time.Second}
-	res, err := client.Get(url)
+	resp, err := client.Get(url)
 
 	if err != nil {
 		return Result{URL: url, Error: err}
 	}
-	errBodyClose := res.Body.Close()
-	if errBodyClose != nil {
-		return Result{URL: url, Error: errBodyClose}
-	}
+	defer resp.Body.Close()
 
 	return Result{
 		URL:    url,
-		Code:   res.StatusCode,
-		Status: res.Status,
+		Code:   resp.StatusCode,
+		Status: resp.Status,
 		Error:  nil,
 	}
 }

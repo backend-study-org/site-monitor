@@ -44,12 +44,12 @@ func main() {
 	}
 	sites := append(notWorkingSites, workingSites...)
 	for _, site := range sites {
-		res := checker.CheckSite(site)
-		if res.Error != nil || res.Code != 200 {
-			fmt.Printf("Site %s NOT ok %d\n", res.URL, res.Code)
-		}
-		if res.Code == 200 {
-			fmt.Printf("Site %s ok\n", res.URL)
+		resp := checker.CheckSite(site)
+
+		if resp.Error == nil && resp.Code == 200 {
+			fmt.Printf("Site %s ok\n", resp.URL)
+		} else {
+			fmt.Printf("Site %s NOT ok\n", resp.URL)
 		}
 	}
 }
