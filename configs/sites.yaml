@@ -1,0 +1,22 @@
+sites:
+  - name: Google
+    url: https://google.com
+  - name: Youtube
+    url: https://youtube.com
+  - name: Yandex
+    url: https://yandex.ru
+  - name: VK
+    url: https://vk.ru
+  - name: OK
+    url: https://ok.ru
+  - name: HH
+    url: https://hh.ru
+  - name: Kinopoisk
+    url: https://kinopoisk.ru
+  - name: BadSite1
+    url: https://123312312notexist1.ru
+  - name: BadSite2
+    url: https://123312312notexist2.ru
+  - name: BadSite3
+    url: https://123312312notexist3.ru
+timeout: 10

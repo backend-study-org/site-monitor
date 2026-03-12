@@ -1,50 +1,43 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/backend-study-org/site-monitor/internal/checker"
+	"github.com/backend-study-org/site-monitor/internal/config"
 )
+
+var configPath string
+
+func init() {
+	flag.StringVar(&configPath, "config", "", "path to config file")
+}
 
 func main() {
 	fmt.Println("Site Monitor started")
-	workingSites := []string{
-		"https://google.com",
-		"https://youtube.com",
-		"https://yandex.ru",
-		"https://vk.com",
-		"https://mail.ru",
-		"https://ok.ru",
-		"https://avito.ru",
-		"https://wildberries.ru", // почему-то не работает
-		"https://ozon.ru",        // почему-то не работает
-		"https://gismeteo.ru",
-		"https://2gis.ru",
-		"https://gosuslugi.ru",
-		"https://rbc.ru",
-		"https://kinopoisk.ru",
-		"https://hh.ru",
+	flag.Parse()
+
+	if configPath == "" {
+		fmt.Println("Must set -config flag")
+		return
 	}
-	notWorkingSites := []string{
-		"http://nonexistent-12345-test-domain.com",
-		"http://this-domain-should-not-exist-xyz.net",
-		"http://invalid_domain",
-		"http://256.256.256.256",
-		"http://example.invalid",
-		"http://no-such-hostname-abcdefg.local",
-		"http://unknown-host-foo-bar.baz",
-		"http://notregistered-tld.example.abc",
-		"http://expired-domain-123456789.com",
-		"http://test-domain-does-not-resolve.xyz",
-		"http://unreachable-host-foo-bar-123.com",
-		"http://connection-timeout-test-abcdef.com",
-		"http://bad-protocol://example.com",
-		"http://missing-tld-domain",
-		"http://non-existent-subdomain.unknown-example.com",
+
+	conf, err := config.Load(configPath)
+	if err != nil {
+		panic(err)
 	}
-	sites := append(notWorkingSites, workingSites...)
+	if conf == nil {
+		fmt.Println("No config")
+		return
+	}
+	if conf.List == nil {
+		fmt.Printf("No sites to check in config file %s\n", configPath)
+		return
+	}
+	sites := conf.List
 	for _, site := range sites {
-		resp := checker.CheckSite(site)
+		resp := checker.CheckSite(site.URL)
 
 		if resp.Error == nil && resp.Code == 200 {
 			fmt.Printf("Site %s ok\n", resp.URL)
