@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 
-	"github.com/backend-study-org/site-monitor/internal/checker"
 	"github.com/backend-study-org/site-monitor/internal/config"
+	"github.com/backend-study-org/site-monitor/internal/scheduler"
 )
 
 var configPath string
@@ -35,14 +36,8 @@ func main() {
 		fmt.Printf("No sites to check in config file %s\n", configPath)
 		return
 	}
-	sites := conf.List
-	for _, site := range sites {
-		resp := checker.CheckSite(site.URL)
 
-		if resp.Error == nil && resp.Code == 200 {
-			fmt.Printf("Site %s ok\n", resp.URL)
-		} else {
-			fmt.Printf("Site %s NOT ok\n", resp.URL)
-		}
-	}
+	sc := scheduler.New(conf)
+	sc.Check(time.Now())
+	sc.Start()
 }
