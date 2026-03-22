@@ -4,15 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
-	"github.com/backend-study-org/site-monitor/internal/checker"
 	"github.com/backend-study-org/site-monitor/internal/config"
+	"github.com/backend-study-org/site-monitor/internal/scheduler"
 )
 
 var configPath string
 
 func main() {
-	fmt.Println("Site Monitor started")
+	fmt.Println("Site Monitor started. Press Ctrl+C to stop.")
 	flag.StringVar(&configPath, "config", "", "path to config file")
 	flag.Parse()
 
@@ -30,14 +31,16 @@ func main() {
 		fmt.Printf("No sites to check in config file %s\n", configPath)
 		return
 	}
-	sites := conf.List
-	for _, site := range sites {
-		resp := checker.CheckSite(site.URL)
 
-		if resp.Error == nil && resp.Code == 200 {
-			fmt.Printf("Site %s ok\n", resp.URL)
-		} else {
-			fmt.Printf("Site %s NOT ok\n", resp.URL)
-		}
-	}
+	sc, stop := scheduler.New(conf)
+
+	go func() {
+		sc.Check(time.Now())
+		sc.Start()
+	}()
+
+	<-stop
+	fmt.Println("Shutting down...")
+	sc.Stop()
+	fmt.Println("Site Monitor stopped.")
 }
