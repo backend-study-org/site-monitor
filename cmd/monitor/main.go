@@ -13,7 +13,7 @@ import (
 var configPath string
 
 func main() {
-	fmt.Println("Site Monitor started")
+	fmt.Println("Site Monitor started. Press Ctrl+C to stop.")
 	flag.StringVar(&configPath, "config", "", "path to config file")
 	flag.Parse()
 
@@ -32,7 +32,15 @@ func main() {
 		return
 	}
 
-	sc := scheduler.New(conf)
-	sc.Check(time.Now())
-	sc.Start()
+	sc, stop := scheduler.New(conf)
+
+	go func() {
+		sc.Check(time.Now())
+		sc.Start()
+	}()
+
+	<-stop
+	fmt.Println("Shutting down...")
+	sc.Stop()
+	fmt.Println("Site Monitor stopped.")
 }
