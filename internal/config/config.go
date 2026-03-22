@@ -26,17 +26,15 @@ func Load(path string) (*Config, error) {
 
 	defer yfile.Close()
 
-	bytes, err2 := io.ReadAll(yfile)
-	if err2 != nil {
-		return nil, err2
-	}
-
-	var data Config
-	err3 := yaml.Unmarshal(bytes, &data)
-
-	if err3 != nil {
+	content, err := io.ReadAll(yfile)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, nil
+	var cfg Config
+	if err := yaml.Unmarshal(content, &cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/backend-study-org/site-monitor/internal/config"
@@ -11,12 +12,9 @@ import (
 
 var configPath string
 
-func init() {
-	flag.StringVar(&configPath, "config", "", "path to config file")
-}
-
 func main() {
 	fmt.Println("Site Monitor started")
+	flag.StringVar(&configPath, "config", "", "path to config file")
 	flag.Parse()
 
 	if configPath == "" {
@@ -26,11 +24,8 @@ func main() {
 
 	conf, err := config.Load(configPath)
 	if err != nil {
-		panic(err)
-	}
-	if conf == nil {
-		fmt.Println("No config")
-		return
+		fmt.Fprintf(os.Stderr, "Fail to load config %v\n", err)
+		os.Exit(1)
 	}
 	if conf.List == nil {
 		fmt.Printf("No sites to check in config file %s\n", configPath)

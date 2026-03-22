@@ -19,4 +19,8 @@ sites:
     url: https://123312312notexist2.ru
   - name: BadSite3
     url: https://123312312notexist3.ru
+<<<<<<< HEAD
 timeout: 60000000000
+=======
+timeout: 10
+>>>>>>> master
